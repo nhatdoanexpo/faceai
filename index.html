@@ -34,10 +34,23 @@
             position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
             z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
         }
+        #imageUpload {
+            position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
+            z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
+        }
+        #trainButton {
+            position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
+            z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
+        }
+
     </style>
 </head>
 
 <body>
+<!-- Đối tượng input để chọn file -->
+<input type="file" id="imageUpload" accept=".jpg, .jpeg, .png">
+<!-- Nút để bắt đầu huấn luyện -->
+<button id="trainButton">Huấn luyện ảnh mới</button>
 
 <input type="file" id="imageUpload1" accept=".jpg, .jpeg, .png" z-index>
 <button id="detect">detect Faces</button>
