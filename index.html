@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="./face-api.min.js"></script>
+    <script src="./script.js"></script>
+    <title>Face Recognition</title>
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Đảm bảo canvas được hiển thị phía trên hình ảnh */
+        }
+
+        #myImg {
+            position: relative;
+            z-index: 0; /* Hình ảnh nằm phía dưới canvas */
+            max-width: 100%; /* Đảm bảo hình ảnh không vượt quá kích thước của khung chứa */
+            height: auto;
+        }
+        #imageUpload1 {
+            position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
+            z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
+        }
+        #detect {
+            position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
+            z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
+        }
+        #result {
+            position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
+            z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
+        }
+    </style>
+</head>
+
+<body>
+
+<input type="file" id="imageUpload1" accept=".jpg, .jpeg, .png" z-index>
+<button id="detect">detect Faces</button>
+<img hidden="true" id="myImg" src="" alt="ahihihi"/>
+<canvas id="myCanvas"></canvas>
+<div id="result"></div>
+
+</body>
+
+</html>
