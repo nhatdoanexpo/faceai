@@ -48,11 +48,14 @@
 
 <body>
 <!-- Đối tượng input để chọn file -->
-<input type="file" id="imageUpload" accept=".jpg, .jpeg, .png">
+<span>Chọn hình ảnh huấn luyên ai</span>
+<input type="file" id="imageUpload" accept=".jpg, .jpeg, .png" title="Chọn hình ảnh huấn luyên ai">
 <!-- Nút để bắt đầu huấn luyện -->
 <button id="trainButton">Huấn luyện ảnh mới</button>
-
-<input type="file" id="imageUpload1" accept=".jpg, .jpeg, .png" z-index>
+<!-- Nút để huấn luyện ảnh từ camera -->
+<button id="trainCameraButton">Huấn luyện từ camera</button>
+<span>Chọn hình ảnh để detect</span>
+<input type="file" id="imageUpload1" accept=".jpg, .jpeg, .png" title="Chọn hình ảnh để detect">
 <button id="detect">detect Faces</button>
 <img hidden="true" id="myImg" src="" alt="ahihihi"/>
 <canvas id="myCanvas"></canvas>

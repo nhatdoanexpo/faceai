@@ -98,13 +98,95 @@ async function trainNewImage() {
     alert('Đã xảy ra lỗi khi huấn luyện ảnh.');
   }
 }
-//-------------------------
+//------------------------- huon luyen tu cammera
+// Hàm để huấn luyện ảnh từ camera
+async function trainFromCamera() {
+  try {
+    // Lấy video từ camera
+    const videoElement = document.createElement('video');
+    document.body.appendChild(videoElement);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoElement.srcObject = stream;
+    await videoElement.play();
+
+    // Chờ một chút để camera hiển thị và người dùng chọn góc nhìn
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Tạo canvas để hiển thị ảnh từ camera
+    const canvas = document.createElement('canvas');
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    const ctx = canvas.getContext('2d');
+
+    // Vẽ hình ảnh từ video lên canvas
+    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+    // Lấy ảnh từ canvas để nhận diện
+    const img = canvas;
+
+    // Thực hiện nhận diện khuôn mặt và các bước khác
+    const detection = await faceapi.detectSingleFace(img)
+        .withFaceLandmarks()
+        .withFaceDescriptor()
+        .withFaceExpressions();
+
+    if (!detection) {
+      alert('Không tìm thấy khuôn mặt trong ảnh từ camera.');
+      return;
+    }
+
+    // Nhãn là tên người trong ảnh (có thể lấy từ người dùng nhập hoặc từ một nguồn khác)
+    const label = prompt('Nhập tên của người trong ảnh:');
+    if (!label) return;
+
+    // Tạo đối tượng LabeledFaceDescriptors mới
+    const labeledFaceDescriptor = new faceapi.LabeledFaceDescriptors(
+        label,
+        [detection.descriptor]
+    );
+
+    // Lấy danh sách các LabeledFaceDescriptors từ localStorage
+    let labeledFaceDescriptors = loadLabeledFaceDescriptorsFromLocalStorage() || [];
+
+    // Thêm labeledFaceDescriptor mới vào mảng
+    labeledFaceDescriptors.push(labeledFaceDescriptor);
+
+    // Lưu lại vào localStorage
+    const json = JSON.stringify(labeledFaceDescriptors.map(fd => ({
+      label: fd.label,
+      descriptors: fd.descriptors.map(d => Array.from(d))
+    })));
+    localStorage.setItem('labeledFaceDescriptors', json);
+
+    alert('Đã thêm ảnh từ camera và huấn luyện thành công.');
+
+    // Dừng và giải phóng stream từ camera
+    stream.getVideoTracks().forEach(track => track.stop());
+    document.body.removeChild(videoElement);
+  } catch (error) {
+    console.error('Lỗi khi huấn luyện ảnh từ camera:', error);
+    alert('Đã xảy ra lỗi khi huấn luyện ảnh từ camera.');
+  }
+}
+
+
+/////--------------------------
+
+
+
+
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadModels();
 
   // Lắng nghe sự kiện khi người dùng chọn file để huấn luyện ảnh mới
   document.getElementById('trainButton').addEventListener('click', async () => {
     await trainNewImage();
+  });
+
+  const trainCameraButton = document.getElementById('trainCameraButton');
+  trainCameraButton.addEventListener('click', async () => {
+    await trainFromCamera();
   });
 
   // Lắng nghe sự kiện khi người dùng chọn file
