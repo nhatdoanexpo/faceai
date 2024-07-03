@@ -261,3 +261,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 });
+
+
+async function detectContinuousFromCamera() {
+  try {
+    const videoElement = document.createElement('video');
+    document.body.appendChild(videoElement);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoElement.srcObject = stream;
+    await videoElement.play();
+
+    // Chờ một chút để camera hiển thị và người dùng chọn góc nhìn
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    const ctx = canvas.getContext('2d');
+
+    // Loop để liên tục nhận diện từ camera
+    setInterval(async () => {
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      const img = canvas;
+
+      const detection = await faceapi.detectSingleFace(img)
+          .withFaceLandmarks()
+          .withFaceDescriptor()
+          .withFaceExpressions();
+
+      if (detection) {
+        // Nhận diện thành công
+        const label = detection.descriptor;
+
+        // Load Labeled Face Descriptors from Local Storage
+        let labeledFaceDescriptors = loadLabeledFaceDescriptorsFromLocalStorage();
+        if (!labeledFaceDescriptors) {
+          // Nếu không tìm thấy trong Local Storage, detect và lưu chúng
+          labeledFaceDescriptors = await detectAllLabeledFaces();
+        }
+
+        // Nhận diện người gần nhất dựa trên descriptors
+        const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.4);
+        const bestMatch = faceMatcher.findBestMatch(label);
+
+        // Lấy cảm xúc của khuôn mặt
+        const expressions = detection.expressions;
+        let emotion = 'Không xác định'; // Giả sử mặc định là không xác định
+
+        if (expressions) {
+          // Tìm biểu hiện cảm xúc có giá trị lớn nhất
+          const maxValue = Math.max(...Object.values(expressions));
+          emotion = Object.keys(expressions).find(key => expressions[key] === maxValue);
+        }
+
+        // Vẽ khung và hiển thị thông tin
+        const dims = faceapi.matchDimensions(canvas, img, true);
+        const resizedResult = faceapi.resizeResults(detection, dims);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, dims.width, dims.height);
+        const box = resizedResult.detection.box;
+        const drawBox = new faceapi.draw.DrawBox(box, { label: bestMatch.label + " - Cảm xúc: " + emotion });
+        drawBox.draw(canvas);
+
+        document.getElementById('result').innerText = `Kết quả: ${bestMatch.label} - Cảm xúc: ${emotion}`;
+      } else {
+        // Không nhận diện được khuôn mặt
+        document.getElementById('result').innerText = 'Không thể nhận diện khuôn mặt.';
+      }
+    }, 1000); // Thực hiện nhận diện mỗi giây
+
+  } catch (error) {
+    console.error('Lỗi khi huấn luyện ảnh từ camera:', error);
+    alert('Đã xảy ra lỗi khi nhận diện từ camera.');
+  }
+}

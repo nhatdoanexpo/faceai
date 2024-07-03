@@ -42,11 +42,18 @@
             position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
             z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
         }
-
+        #detectContinuous {
+            position: relative; /* Đảm bảo rằng z-index hoạt động trong phần tử đã được định vị */
+            z-index: 999; /* Đặt z-index lớn hơn các phần tử khác có thể che phủ */
+        }
     </style>
 </head>
 
 <body>
+
+<button id="detectContinuous" onclick="detectContinuousFromCamera()">Nhận diện liên tục từ Camera</button>
+
+
 <!-- Đối tượng input để chọn file -->
 <span>Chọn hình ảnh huấn luyên ai</span>
 <input type="file" id="imageUpload" accept=".jpg, .jpeg, .png" title="Chọn hình ảnh huấn luyên ai">
